@@ -53,3 +53,12 @@ This section contains scripts to estimate the insertion-time distribution of int
 This section contains the workflow for comparative chromosome-level synteny analysis among Haloxylon arachnoideus, Kalidium schrenkianum, and Beta vulgaris.
 
 1. Synteny_analysis.sh - Script to prepare gene coordinate and CDS files, identify pairwise syntenic anchors, filter syntenic blocks, and generate chromosome-level synteny plots among H. arachnoideus, K. schrenkianum, and B. vulgaris.
+
+
+06-Contamination assessment
+
+This section contains scripts to assess potential organellar contamination and the overall purity of the K. schrenkianum genome assembly.
+
+1.organelle_contamination_screening.sh - Script to assemble chloroplast and mitochondrial genomes from PacBio HiFi reads, align the organellar genomes against the genome assembly, calculate organellar sequence coverage, and remove candidate organelle-derived scaffolds with ≥50% organellar coverage.
+
+2.GC_depth_assessment.sh - Script to map PacBio HiFi reads to the organelle-filtered assembly, retain alignments with mapping quality ≥20, and calculate mean sequencing depth and GC content in non-overlapping 10-kb windows for GC–depth-based assessment of assembly purity.
