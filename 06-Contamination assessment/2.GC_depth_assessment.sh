@@ -50,3 +50,5 @@ paste \
     GC_depth/${PREFIX}.10kb.GC.bed | \
 awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4,$8}' \
     >> GC_depth/${PREFIX}.10kb.GC_depth.tsv
+
+
