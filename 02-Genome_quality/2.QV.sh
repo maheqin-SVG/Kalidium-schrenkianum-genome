@@ -3,7 +3,7 @@ set -euo pipefail
 GENOME="out_JBAT.FINAL.Ksch.fa"
 READ1="Ksch.survey.R1.fq.gz"
 READ2="Ksch.survey.R2.fq.gz"
-GENOME_SIZE=934011618
+GENOME_SIZE=988,689,271
 KMER=21
 THREADS=16
 MERQURY="/path/to/merqury"
