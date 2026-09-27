@@ -1,28 +1,57 @@
-#!/bin/bash
-set -euo pipefail
-GENOME="out_JBAT.FINAL.Ksch.fa"
-READ1="Ksch.survey.R1.fq.gz"
-READ2="Ksch.survey.R2.fq.gz"
-GENOME_SIZE=988,689,271
-KMER=21
-THREADS=16
-MERQURY="/path/to/merqury"
-"${MERQURY}/best_k.sh" "${GENOME_SIZE}"
-meryl k="${KMER}" count \
-    threads="${THREADS}" \
-    output Ksch.R1.meryl \
-    "${READ1}"
-meryl k="${KMER}" count \
-    threads="${THREADS}" \
-    output Ksch.R2.meryl \
-    "${READ2}"
+### Command
+
+meryl k=21 count \
+  threads=16 \
+  output Ksch.R1.meryl \
+  Ksch.survey.R1.fq.gz
+
+meryl k=21 count \
+  threads=16 \
+  output Ksch.R2.meryl \
+  Ksch.survey.R2.fq.gz
+
 meryl union-sum \
-    output Ksch.reads.meryl \
-    Ksch.R1.meryl \
-    Ksch.R2.meryl
-"${MERQURY}/merqury.sh" \
-    Ksch.reads.meryl \
-    "${GENOME}" \
-    Ksch
+  output Ksch.reads.meryl \
+  Ksch.R1.meryl \
+  Ksch.R2.meryl
+
+merqury.sh \
+  Ksch.reads.meryl \
+  Ksch.final.clean.fa \
+  Ksch
+
 cat Ksch.qv
 cat Ksch.completeness.stats
+
+### Software
+
+- Merqury v1.4.1
+- k-mer size: 21
+
+### Input
+
+- `Ksch.survey.R1.fq.gz`
+- `Ksch.survey.R2.fq.gz`
+- `Ksch.final.clean.fa`
+
+### Output
+
+- `Ksch.R1.meryl/`
+- `Ksch.R2.meryl/`
+- `Ksch.reads.meryl/`
+- `Ksch.qv`
+- `Ksch.completeness.stats`
+
+### Input–output relationship
+
+`Ksch.survey.R1.fq.gz` + `Ksch.survey.R2.fq.gz`
+→ 21-mer counting with Meryl
+→ `Ksch.R1.meryl` + `Ksch.R2.meryl`
+→ merged read k-mer database `Ksch.reads.meryl`
+
+`Ksch.reads.meryl` + `Ksch.final.clean.fa`
+→ Merqury assessment
+→ `Ksch.qv` + `Ksch.completeness.stats`
+
+The paired-end Illumina genome-survey reads were used to construct a 21-mer database with Meryl. 
+The two read-specific k-mer databases were combined using `union-sum`, and the merged database was compared with the final contamination-cleaned genome assembly (`Ksch.final.clean.fa`) using Merqury to estimate consensus QV and k-mer completeness.
