@@ -1,96 +1,101 @@
-#!/bin/bash
-set -euo pipefail
-# Input files and parameters
-ASSEMBLY="$(pwd)/Ksch.asm.bp.p_ctg.fa"
-HIC_L1_R1="Ksch_L1_R1.fq.gz"
-HIC_L1_R2="Ksch_L1_R2.fq.gz"
-HIC_L2_R1="Ksch_L2_R1.fq.gz"
-HIC_L2_R2="Ksch_L2_R2.fq.gz"
-HIC_R1="Ksch_HiC_R1.fq.gz"
-HIC_R2="Ksch_HiC_R2.fq.gz"
-RAW_BAM="$(pwd)/Ksch_HiC.bam"
-FILTERED_BAM="$(pwd)/Ksch_HiC.filtered.bam"
-HAPHIC="/path/to/HapHiC"
-MAP_THREADS=10
-FILTER_THREADS=14
-# Merge Hi-C sequencing lanes
-cat \
-    "${HIC_L1_R1}" \
-    "${HIC_L2_R1}" \
-    > "${HIC_R1}"
-cat \
-    "${HIC_L1_R2}" \
-    "${HIC_L2_R2}" \
-    > "${HIC_R2}"
-# Build BWA index
-bwa index "${ASSEMBLY}"
-# Align Hi-C reads and remove PCR duplicates
-bwa mem \
-    -t "${MAP_THREADS}" \
-    -5SP \
-    "${ASSEMBLY}" \
-    "${HIC_R1}" \
-    "${HIC_R2}" |
-samblaster |
-samtools view \
-    -@ "${MAP_THREADS}" \
-    -S \
-    -h \
-    -b \
-    -F 3340 \
-    -o "${RAW_BAM}" \
-    -
-# Filter Hi-C alignments
-"${HAPHIC}/utils/filter_bam" \
-    "${RAW_BAM}" \
-    1 \
-    --nm 3 \
-    --threads "${FILTER_THREADS}" |
-samtools view \
-    -b \
-    -@ "${FILTER_THREADS}" \
-    -o "${FILTERED_BAM}" \
-    -
-# HapHiC chromosome scaffolding
-"${HAPHIC}/haphic" pipeline \
-    "${ASSEMBLY}" \
-    "${FILTERED_BAM}" \
-    9 \
-    --quick_view
-# Generate files for Juicebox manual curation
-# Generate Juicebox files
-cd 04.build
-ln -sf "${ASSEMBLY}" Ksch.asm.bp.p_ctg.fa
-samtools faidx Ksch.asm.bp.p_ctg.fa
-"${HAPHIC}/utils/juicer" pre \
-    -a \
-    -q 1 \
-    -o out_JBAT \
-    "${FILTERED_BAM}" \
-    scaffolds.raw.agp \
-    Ksch.asm.bp.p_ctg.fa.fai \
-    > out_JBAT.log 2>&1
-java \
-    -Djava.awt.headless=true \
-    -Xmx32G \
-    -jar "${JUICER_TOOLS}" \
-    pre \
-    out_JBAT.txt \
-    out_JBAT.hic.part \
-    <(grep PRE_C_SIZE out_JBAT.log | awk '{print $2" "$3}')
-    
+### Command
+
+cat Ksch_L1_R1.fq.gz Ksch_L2_R1.fq.gz > Ksch_HiC_R1.fq.gz
+cat Ksch_L1_R2.fq.gz Ksch_L2_R2.fq.gz > Ksch_HiC_R2.fq.gz
+
+bwa index Ksch.asm.bp.p_ctg.fa
+bwa mem -t 10 -5SP \
+  Ksch.asm.bp.p_ctg.fa \
+  Ksch_HiC_R1.fq.gz \
+  Ksch_HiC_R2.fq.gz | \
+samblaster | \
+samtools view -@ 10 -S -h -b -F 3340 \
+  -o Ksch_HiC.bam -
+
+HapHiC/utils/filter_bam \
+  Ksch_HiC.bam \
+  1 --nm 3 --threads 14 | \
+samtools view -b -@ 14 \
+  -o Ksch_HiC.filtered.bam -
+
+HapHiC/haphic pipeline \
+  Ksch.asm.bp.p_ctg.fa \
+  Ksch_HiC.filtered.bam \
+  9 \
+  --quick_view
+
+HapHiC/utils/juicer pre \
+  -a -q 1 \
+  -o out_JBAT \
+  Ksch_HiC.filtered.bam \
+  scaffolds.raw.agp \
+  Ksch.asm.bp.p_ctg.fa.fai \
+  > out_JBAT.log 2>&1
+
+java -Djava.awt.headless=true -Xmx32G \
+  -jar juicer_tools.jar pre \
+  out_JBAT.txt \
+  out_JBAT.hic.part \
+  <(grep PRE_C_SIZE out_JBAT.log | awk '{print $2" "$3}')
+
 mv out_JBAT.hic.part out_JBAT.hic
-# Manual curation:
-# Open out_JBAT.hic and out_JBAT.assembly in Juicebox,
-# manually inspect and correct the scaffolds, and save the
-# reviewed assembly as out_JBAT.review.assembly.
-# Generate the final chromosome-scale assembly
-"${HAPHIC}/utils/juicer" post \
-    -o out_JBAT \
-    out_JBAT.review.assembly \
-    out_JBAT.liftover.agp \
-    "${ASSEMBLY}"
-# Plot the final Hi-C contact map
-"${HAPHIC}/haphic" plot \
-    out_JBAT.FINAL.agp \
-    "${FILTERED_BAM}"
+
+HapHiC/utils/juicer post \
+  -o out_JBAT \
+  out_JBAT.review.new.clean.assembly \
+  out_JBAT.liftover.agp \
+  Ksch.asm.bp.p_ctg.fa
+  
+mv out_JBAT.FINAL.agp Ksch_new_clean.FINAL.agp
+
+HapHiC/haphic plot \
+  Ksch_new_clean.FINAL.agp \
+  Ksch_HiC.filtered.bam
+
+### Software
+
+- BWA-MEM v0.7.18-r1243
+- SAMBLASTER v0.1.26
+- SAMtools v1.6
+- HapHiC v1.0.6
+- Juicebox v1.11.08
+
+### Input
+
+- `Ksch.asm.bp.p_ctg.fa`
+- `Ksch_L1_R1.fq.gz`
+- `Ksch_L1_R2.fq.gz`
+- `Ksch_L2_R1.fq.gz`
+- `Ksch_L2_R2.fq.gz`
+
+### Output
+
+- `Ksch_HiC_R1.fq.gz`
+- `Ksch_HiC_R2.fq.gz`
+- `Ksch_HiC.filtered.bam`
+- `scaffolds.raw.agp`
+- `out_JBAT.assembly`
+- `out_JBAT.hic`
+- `out_JBAT.review.new.clean.assembly`
+- `out_JBAT.FINAL.clean.agp`
+- `out_JBAT.FINAL.clean.fa`
+
+### Input–output relationship
+
+The chromosome-scale assembly workflow consisted of four sequential steps:
+
+1. **Hi-C read alignment and filtering**  
+   Input: `Ksch.asm.bp.p_ctg.fa` and Hi-C paired-end reads  
+   Output: `Ksch_HiC.bam` and `Ksch_HiC.filtered.bam`
+
+2. **HapHiC scaffolding**  
+   Input: `Ksch.asm.bp.p_ctg.fa` and `Ksch_HiC.filtered.bam`  
+   Output: `scaffolds.raw.agp` and intermediate HapHiC scaffolding files
+
+3. **Juicebox manual curation**  
+   The HapHiC scaffolding result was converted into Juicebox files (`out_JBAT.assembly` and `out_JBAT.hic`) for visual inspection and manual correction.  
+   Output: `out_JBAT.review.new.assembly`
+
+4. **Contamination removal and final assembly generation**  
+   After manual curation, 73 contaminant scaffolds were removed from the reviewed assembly to generate `out_JBAT.review.new.clean.assembly`.  
+   This clean reviewed assembly was then processed using the HapHiC `juicer post` utility to generate the final chromosome-scale AGP and FASTA files, including `Ksch_new_clean.FINAL.agp` and `Ksch_new_clean.FINAL.fa`.
