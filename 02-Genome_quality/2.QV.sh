@@ -54,4 +54,4 @@ cat Ksch.completeness.stats
 → `Ksch.qv` + `Ksch.completeness.stats`
 
 The paired-end Illumina genome-survey reads were used to construct a 21-mer database with Meryl. 
-The two read-specific k-mer databases were combined using `union-sum`, and the merged database was compared with the final contamination-cleaned genome assembly (`Ksch.final.clean.fa`) using Merqury to estimate consensus QV and k-mer completeness.
+The two read-specific k-mer databases were combined using `union-sum`, and the merged database was compared with the final genome assembly (`Ksch.final.clean.fa`) using Merqury to estimate consensus QV and k-mer completeness.
