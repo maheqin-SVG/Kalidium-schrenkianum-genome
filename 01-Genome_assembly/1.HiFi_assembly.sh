@@ -1,40 +1,39 @@
-#!/bin/bash
-set -euo pipefail
-# ------------------------------------------------------------
-# 1. Input files and parameters
-# ------------------------------------------------------------
-HIFI_BAM="Ksch.hifi_reads.bam"
-HIFI_FASTA="Ksch.hifi_reads.fasta"
-PREFIX="Ksch.asm"
-THREADS=20
-# ------------------------------------------------------------
-# 2. Convert PacBio HiFi BAM to FASTA
-# ------------------------------------------------------------
-samtools view "${HIFI_BAM}" |
-awk '{
-    print ">"$1
-    print $10
-}' > "${HIFI_FASTA}"
-# ------------------------------------------------------------
-# 3. De novo assembly using hifiasm
-# ------------------------------------------------------------
-hifiasm \
-    -o "${PREFIX}" \
-    -t "${THREADS}" \
-    "${HIFI_FASTA}" \
-    2> "${PREFIX}.log"
-# ------------------------------------------------------------
-# 4. Convert primary-contig GFA to FASTA
-# ------------------------------------------------------------
+### Command
 
-awk '/^S/{
-    print ">"$2
-    print $3
-}' \
-"${PREFIX}.bp.p_ctg.gfa" \
-> "${PREFIX}.bp.p_ctg.fa"
-# ------------------------------------------------------------
-# 5. Index the primary assembly
-# ------------------------------------------------------------
+samtools view Ksch.hifi_reads.bam | \
+awk '{print ">"$1"\n"$10}' > Ksch.hifi_reads.fasta
 
-samtools faidx "${PREFIX}.bp.p_ctg.fa"
+hifiasm -o Ksch.asm -t 20 Ksch.hifi_reads.fasta \
+  2> Ksch.asm.log
+
+awk '/^S/{print ">"$2"\n"$3}' \
+  Ksch.asm.bp.p_ctg.gfa > Ksch.asm.bp.p_ctg.fa
+
+samtools faidx Ksch.asm.bp.p_ctg.fa
+
+### Software
+
+- Hifiasm v0.16.1-r375
+- SAMtools v1.6
+
+### Input
+
+- `Ksch.hifi_reads.bam`  
+  
+### Output
+
+- `Ksch.hifi_reads.fasta`  
+
+- `Ksch.asm.bp.p_ctg.gfa`  
+
+- `Ksch.asm.bp.p_ctg.fa`  
+
+### Input–output relationship
+
+`Ksch.hifi_reads.bam`
+→ `Ksch.hifi_reads.fasta`
+→ `Ksch.asm.bp.p_ctg.gfa`
+→ `Ksch.asm.bp.p_ctg.fa`
+→ Hi-C scaffolding
+
+The Hifiasm primary-contig assembly (`Ksch.asm.bp.p_ctg.gfa`) was retained and converted to FASTA format (`Ksch.asm.bp.p_ctg.fa`) for subsequent Hi-C scaffolding.
