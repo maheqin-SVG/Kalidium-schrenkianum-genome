@@ -1,3 +1,4 @@
+### Command
 kraken2 --db k2_pluspfp_20260626 \
   --threads 32 \
   --memory-mapping \
@@ -5,3 +6,17 @@ kraken2 --db k2_pluspfp_20260626 \
   --report Ksch.kraken2.report \
   --output Ksch.kraken2.output \
   Ksch.final.clean.fa
+
+### Database
+- Software: Kraken2 v2.1.2
+- Database: PlusPFP-16
+- Database release: 20260626
+- Confidence threshold: 0.05
+
+### Summary results
+A total of 99 assembled sequences were screened.
+- Total sequences screened: 99
+- Unclassified sequences: 99
+- Classified sequences: 0
+- Microbial contaminants identified: 0
+- Additional scaffolds removed: 0
