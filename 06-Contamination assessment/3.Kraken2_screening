@@ -1,0 +1,7 @@
+kraken2 --db k2_pluspfp_20260626 \
+  --threads 32 \
+  --memory-mapping \
+  --confidence 0.05 \
+  --report Ksch.kraken2.report \
+  --output Ksch.kraken2.output \
+  Ksch.final.clean.fa
