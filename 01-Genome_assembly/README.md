@@ -10,7 +10,7 @@ The initial Juicebox assembly (`out_JBAT.assembly`) and the manually reviewed as
 - 4 fragments moved to debris
 - 2 reorientation events
 
-`Juicebox_split_coordinates.tsv` provides the reconstructed coordinates of all split fragments on their original contigs, with no length inconsistencies detected.
+`Juicebox_split_coordinates.tsv` provides the reconstructed coordinates of all split fragments on their original contigs.
 
 ### Contamination removal
 
