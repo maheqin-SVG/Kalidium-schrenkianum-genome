@@ -1,121 +1,83 @@
-#!/bin/bash
-set -euo pipefail
+### Command
 
-SPECIES=("Bvul" "Hara" "Ksch")
-declare -A GFF
-declare -A GENOME
+# Prepare BED and CDS files
+for sp in Bvul Hara Ksch; do
+  python -m jcvi.formats.gff bed \
+    --type=mRNA \
+    --key=ID \
+    ${sp}.gff3 > ${sp}.bed
 
-GFF["Bvul"]="Bvul.gff3"
-GFF["Hara"]="Hara.gff3"
-GFF["Ksch"]="Ksch.gff3"
+  python -m jcvi.formats.bed uniq ${sp}.bed
+  mv ${sp}.uniq.bed ${sp}.bed
 
-GENOME["Bvul"]="Bvul_genome.fasta"
-GENOME["Hara"]="Hara_genome.fasta"
-GENOME["Ksch"]="Ksch_genome.fasta"
+  gffread ${sp}.gff3 \
+    -g ${sp}_genome.fasta \
+    -x ${sp}.all.cds.fa
 
-# 1. Prepare BED and CDS files
-
-for sp in "${SPECIES[@]}"; do
-
-    python -m jcvi.formats.gff bed \
-        --type=mRNA \
-        --key=ID \
-        "${GFF[$sp]}" \
-        > "${sp}.bed"
-
-    python -m jcvi.formats.bed uniq "${sp}.bed"
-
-    mv "${sp}.uniq.bed" "${sp}.bed"
-
-    gffread \
-        "${GFF[$sp]}" \
-        -g "${GENOME[$sp]}" \
-        -x "${sp}.all.cds.fa"
-
-    seqkit grep \
-        -f <(cut -f 4 "${sp}.bed") \
-        "${sp}.all.cds.fa" | \
-    seqkit seq -i \
-        > "${sp}.cds"
-
+  seqkit grep \
+    -f <(cut -f 4 ${sp}.bed) \
+    ${sp}.all.cds.fa | \
+  seqkit seq -i > ${sp}.cds
 done
 
-# 2. Identify pairwise syntenic anchors
+# Identify pairwise syntenic anchors
+python -m jcvi.compara.catalog ortholog --no_strip_names Ksch Bvul
+python -m jcvi.compara.catalog ortholog --no_strip_names Hara Ksch
+python -m jcvi.compara.catalog ortholog --no_strip_names Hara Bvul
 
-python -m jcvi.compara.catalog ortholog \
-    --no_strip_names \
-    Ksch Bvul
-
-python -m jcvi.compara.catalog ortholog \
-    --no_strip_names \
-    Hara Bvul
-
-python -m jcvi.compara.catalog ortholog \
-    --no_strip_names \
-    Hara Ksch
-
-# 3. Filter syntenic blocks
+# Filter syntenic blocks
+python -m jcvi.compara.synteny screen \
+  --minspan=30 --simple \
+  Ksch.Bvul.anchors Ksch.Bvul.anchors.new
 
 python -m jcvi.compara.synteny screen \
-    --minspan=30 \
-    --simple \
-    Ksch.Bvul.anchors \
-    Ksch.Bvul.anchors.new
+  --minspan=30 --simple \
+  Hara.Ksch.anchors Hara.Ksch.anchors.new
 
 python -m jcvi.compara.synteny screen \
-    --minspan=30 \
-    --simple \
-    Hara.Ksch.anchors \
-    Hara.Ksch.anchors.new
+  --minspan=30 --simple \
+  Hara.Bvul.anchors Hara.Bvul.anchors.new
 
-python -m jcvi.compara.synteny screen \
-    --minspan=30 \
-    --simple \
-    Hara.Bvul.anchors \
-    Hara.Bvul.anchors.new
-
-# 4. Prepare chromosome order
-
-awk '$1 !~ /Contig/ && !seen[$1]++ {print $1}' \
-    Hara.bed | \
-paste -sd"," - \
-    > Hara.seqids
-
-awk '$1 !~ /Contig/ && !seen[$1]++ {print $1}' \
-    Ksch.bed | \
-paste -sd"," - \
-    > Ksch.seqids
-
-awk '
-$1 !~ /Contig/ && !seen[$1]++ {
-    chr[++n]=$1
-}
-END{
-    for(i=n;i>=1;i--)
-        print chr[i] "-"
-}
-' Bvul.bed | \
-paste -sd"," - \
-    > Bvul.seqids
-
-cat \
-    Hara.seqids \
-    Ksch.seqids \
-    Bvul.seqids \
-    > all.seqids
-
-# 5. Generate layout and plot chromosome-level synteny
-
-cat > layout <<'EOF'
-# y, xstart, xend, rotation, color, label, va, bed
-.7, .1, .8, 0, , Hara, top, Hara.bed
-.5, .1, .8, 0, , Ksch, top, Ksch.bed
-.3, .1, .8, 0, , Bvul, top, Bvul.bed
-# edges
-e, 0, 1, Hara.Ksch.anchors.simple
-e, 1, 2, Ksch.Bvul.anchors.simple
-EOF
-
+# Plot chromosome-level synteny
 python -m jcvi.graphics.karyotype \
-    all.seqids \
-    layout
+  all.seqids \
+  layout
+
+### Software
+
+- MCScanX v1.0.0
+- JCVI v1.5.7
+- GffRead v0.12.7
+- SeqKit v2.12.0
+
+### Input
+
+- `Ksch.gff3`
+- `Ksch_genome.fasta`
+- `Hara.gff3`
+- `Hara_genome.fasta`
+- `Bvul.gff3`
+- `Bvul_genome.fasta`
+- `all.seqids`
+- `layout`
+
+### Output
+
+- `Ksch.bed`
+- `Hara.bed`
+- `Bvul.bed`
+- `Ksch.cds`
+- `Hara.cds`
+- `Bvul.cds`
+- `Ksch.Bvul.anchors.simple`
+- `Hara.Ksch.anchors.simple`
+- `Hara.Bvul.anchors.simple`
+- chromosome-level synteny figure
+
+### Input–output relationship
+
+Genome GFF3 and FASTA files from K. schrenkianum, H. arachnoideus, and B. vulgaris
+→ preparation of BED and CDS files
+→ pairwise ortholog and syntenic-anchor identification
+→ filtering of syntenic blocks with `--minspan=30`
+→ chromosome-level synteny visualization with JCVI
