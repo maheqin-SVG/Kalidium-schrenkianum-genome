@@ -1,20 +1,34 @@
-#!/bin/bash
-set -euo pipefail
-
-PROTEIN="Ksch.pep.fasta"
-LINEAGE="embryophyta_odb12.2"
-OUT="Ksch_BUSCO_protein"
-THREADS=32
+### Command
 
 busco \
-    -i "${PROTEIN}" \
-    -o "${OUT}" \
-    -l "${LINEAGE}" \
-    -m proteins \
-    -c "${THREADS}"
+  -i Ksch.clean.pep.fasta \
+  -o Ksch_BUSCO_protein \
+  -l embryophyta_odb12.2 \
+  -m proteins \
+  -c 32
 
-find "${OUT}" \
-    -type f \
-    -name "short_summary*.txt" \
-    -exec cat {} \; \
-    > Ksch.BUSCO.protein.full_summary.txt
+find Ksch_BUSCO_protein \
+  -type f \
+  -name "short_summary*.txt" \
+  -exec cat {} \; \
+  > Ksch.BUSCO.protein_summary.txt
+
+ ### Software
+
+- BUSCO v6.1.0
+- Lineage database: embryophyta_odb12.2
+
+### Input
+
+- `Ksch.clean.pep.fasta`
+
+### Output
+
+- `Ksch_BUSCO_protein/`
+- `Ksch.BUSCO.protein_summary.txt`
+
+### Input–output relationship
+
+`Ksch.clean.pep.fasta`
+→ BUSCO protein-mode assessment
+→ protein-set completeness statistics and `Ksch.BUSCO.protein_summary.txt`
