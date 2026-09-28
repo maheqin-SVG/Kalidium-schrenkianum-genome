@@ -1,0 +1,17 @@
+# BUSCO version is: 6.1.0 
+# The lineage dataset is: embryophyta_odb12.2 (Creation date: 2026-05-13, number of genomes: 75, number of BUSCOs: 1658)
+# Summarized benchmarking in BUSCO notation for file /groups/g1600002/home/mahq2025/maheqin/workspace/01.hic/Ksch/NCBI_data/clean.fa.gff3/clean.busco/Ksch.clean.pep.fasta
+# BUSCO was run in mode: proteins
+
+	***** Results: *****
+
+	C:98.4%[S:94.1%,D:4.3%],F:0.7%,M:0.9%,n:1658	   
+	1631	Complete BUSCOs (C)			   
+	1560	Complete and single-copy BUSCOs (S)	   
+	71	Complete and duplicated BUSCOs (D)	   
+	12	Fragmented BUSCOs (F)			   
+	15	Missing BUSCOs (M)			   
+	1658	Total BUSCO groups searched		   
+
+Dependencies and versions:
+	hmmsearch: 3.4
