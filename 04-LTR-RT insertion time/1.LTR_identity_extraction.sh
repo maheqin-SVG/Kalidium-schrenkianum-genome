@@ -1,15 +1,14 @@
-#!/bin/bash
-set -euo pipefail
-
-GFF="ksch.fa.mod.EDTA.intact.gff3"
-OUT="Ksch.LTR_identity.tsv"
+### Command
 
 awk -F'\t' '
 BEGIN{
     OFS="\t"
     print "Chr","Type","Identity"
 }
-$3=="repeat_region" && $9~/Classification=LTR\/(Copia|Gypsy)/ && $9~/ltr_identity=/ {
+$3=="repeat_region" &&
+$9~/Classification=LTR\/(Copia|Gypsy)/ &&
+$9~/ltr_identity=/ {
+
     type=""
     identity=""
 
@@ -31,5 +30,22 @@ $3=="repeat_region" && $9~/Classification=LTR\/(Copia|Gypsy)/ && $9~/ltr_identit
 
     if((type=="Copia" || type=="Gypsy") && identity!="")
         print $1,type,identity
-}
-' "${GFF}" > "${OUT}"
+
+### Software
+
+- AWK
+- EDTA v2.1.0
+
+### Input
+
+- `Ksch.final.clean.fa.mod.EDTA.intact.gff3`
+
+### Output
+
+- `Ksch.LTR_identity.tsv`
+
+### Input–output relationship
+
+`Ksch.final.clean.fa.mod.EDTA.intact.gff3`
+→ extraction of intact Copia and Gypsy LTR-RT identity values
+→ `Ksch.LTR_identity.tsv`
