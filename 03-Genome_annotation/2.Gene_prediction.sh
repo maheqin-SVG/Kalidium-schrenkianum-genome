@@ -18,11 +18,11 @@ Detailed EVidenceModeler commands and evidence weights are provided in
 
 ### Software
 
-- GETA
+- GETA v2.4.12
 - RepeatMasker v4.1.0
 - HISAT2 v2.1.0
 - StringTie v2.2.1
-- TransDecoder
+- TransDecoder v5.5.0
 - GeneWise v2.4.1
 - AUGUSTUS v3.3.3
 - EVidenceModeler v1.1.1
