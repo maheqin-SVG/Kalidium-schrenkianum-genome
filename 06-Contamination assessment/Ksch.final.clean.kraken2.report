@@ -1,0 +1,12 @@
+ 95.66	441	441	U	0	unclassified
+  4.34	20	0	R	1	root
+  4.34	20	17	R1	131567	  cellular organisms
+  0.65	3	0	R2	2759	    Eukaryota
+  0.65	3	0	K	33090	      Viridiplantae
+  0.65	3	0	P	35493	        Streptophyta
+  0.65	3	0	P1	131221	          Streptophytina
+  0.65	3	1	P2	3193	            Embryophyta
+  0.43	2	0	P3	58023	              Tracheophyta
+  0.43	2	0	P4	78536	                Euphyllophyta
+  0.43	2	0	P5	58024	                  Spermatophyta
+  0.43	2	2	C	3398	                    Magnoliopsida
