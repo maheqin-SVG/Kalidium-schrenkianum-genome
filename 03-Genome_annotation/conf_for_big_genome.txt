@@ -1,8 +1,3 @@
-## Set the detail parameters of the modules during GETA pipeline through this config file.
-# the parameters set below will rewrite the default threashold.
-# the template conf.txt in GETA software was the default values.
-# the anotated lines start with # will be ingnored. the blank lines will be ignored.
-
 [RepeatMasker]
 -e ncbi -gff
 # During the step of RepeatMasker: -species was passed by --RM_species; -pa was passed by --CPU.
