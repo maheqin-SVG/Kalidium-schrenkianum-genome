@@ -2,7 +2,7 @@
 
 This directory contains the scripts and supporting results for organellar contamination filtering, GC–depth assessment, and Kraken2 screening of the *Kalidium schrenkianum* genome assembly.
 
-## Analysis workflows
+## Work flows
 
 - `1.organelle_contamination_screening.sh` — Organelle genome alignment and removal of scaffolds with ≥50% non-redundant organellar coverage.
 - `2.GC_depth_assessment.sh` — GC content and HiFi sequencing-depth analysis in non-overlapping 10-kb windows.
