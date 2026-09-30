@@ -1,0 +1,15 @@
+Correction_ID	Correction_type	Original_contig	Original_start	Original_end	Orientation_before	Orientation_after	Reviewed_record	Description
+JC001	SPLIT	ctg00000154.1	11280000	11280001	NA	NA	ctg00000154.1:::fragment_1 | ctg00000154.1:::fragment_2:::debris	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC002	SPLIT	ctg00000154.1	11305000	11305001	NA	NA	ctg00000154.1:::fragment_2:::debris | ctg00000154.1:::fragment_3	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC003	SPLIT	ctg00000171.1	20310875	20310876	NA	NA	ctg00000171.1:::fragment_1 | ctg00000171.1:::fragment_2:::debris	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC004	SPLIT	ctg00000171.1	20435875	20435876	NA	NA	ctg00000171.1:::fragment_2:::debris | ctg00000171.1:::fragment_3	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC005	SPLIT	ctg00000192.1	6751905	6751906	NA	NA	ctg00000192.1:::fragment_1 | ctg00000192.1:::fragment_2:::debris	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC006	SPLIT	ctg00000192.1	6776905	6776906	NA	NA	ctg00000192.1:::fragment_2:::debris | ctg00000192.1:::fragment_3	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC007	SPLIT	ctg00000201.1	3279644	3279645	NA	NA	ctg00000201.1:::fragment_1 | ctg00000201.1:::fragment_2:::debris	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC008	SPLIT	ctg00000201.1	3304644	3304645	NA	NA	ctg00000201.1:::fragment_2:::debris | ctg00000201.1:::fragment_3	Manual split breakpoint inferred from reviewed Juicebox assembly
+JC009	MOVE_TO_DEBRIS	ctg00000154.1	11280001	11305000	NA	NA	ctg00000154.1:::fragment_2:::debris	Fragment moved to debris during manual Juicebox curation
+JC010	MOVE_TO_DEBRIS	ctg00000171.1	20310876	20435875	NA	NA	ctg00000171.1:::fragment_2:::debris	Fragment moved to debris during manual Juicebox curation
+JC011	MOVE_TO_DEBRIS	ctg00000192.1	6751906	6776905	NA	NA	ctg00000192.1:::fragment_2:::debris	Fragment moved to debris during manual Juicebox curation
+JC012	MOVE_TO_DEBRIS	ctg00000201.1	3279645	3304644	NA	NA	ctg00000201.1:::fragment_2:::debris	Fragment moved to debris during manual Juicebox curation
+JC013	REORIENTATION	ctg00000154.1	11305001	46811946	+	-	ctg00000154.1:::fragment_3	Orientation differs between initial and reviewed Juicebox assembly
+JC014	REORIENTATION	ctg00000200.1	1	19870995	-	+	ctg00000200.1	Orientation differs between initial and reviewed Juicebox assembly
