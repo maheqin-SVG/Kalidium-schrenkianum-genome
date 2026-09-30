@@ -1,94 +1,73 @@
 ### Command
 
-# Assemble chloroplast and mitochondrial genomes from HiFi reads
 samtools fasta -@ 32 Ksch.hifi.bam > Ksch.HiFi.fa
 
-himt assemble \
-  -i Ksch.HiFi.fa \
-  -o Ksch_organelle \
-  -t 32
-
-# Align organelle genomes to the nuclear assembly
-minimap2 -x asm5 -t 32 \
-  Ksch_genome.fasta chloroplast.fa \
-  > Ksch.cp.paf
+himt assemble -i Ksch.HiFi.fa -o Ksch_organelle -t 32
 
 minimap2 -x asm5 -t 32 \
-  Ksch_genome.fasta mitochondrial.fa \
-  > Ksch.mt.paf
+  ksch_genome.fasta Ksch.chloroplast.fa \
+  > chloroplast_vs_nuclear.paf
 
-# Merge organelle-aligned regions
-for TYPE in cp mt; do
-  awk 'BEGIN{OFS="\t"} {print $1,$3,$4}' Ksch.${TYPE}.paf | \
+minimap2 -x asm5 -t 32 \
+  ksch_genome.fasta Ksch.mitochondrial.fa \
+  > mitochondrial_vs_nuclear.paf
+
+for TYPE in chloroplast mitochondrial; do
+  awk 'BEGIN{OFS="\t"} {print $6,$8,$9}' \
+    ${TYPE}_vs_nuclear.paf | \
   sort -k1,1 -k2,2n | \
-  bedtools merge -i - \
-  > Ksch.${TYPE}.merged.bed
+  bedtools merge -i - > ${TYPE}.merged.bed
 done
 
-# Identify scaffolds with >=50% organelle-derived coverage
-samtools faidx Ksch_genome.fasta
+samtools faidx ksch_genome.fasta
 
-for TYPE in cp mt; do
-  awk '
-  NR==FNR {len[$1]=$2; next}
-  {cov[$1]+=$3-$2}
-  END {
-      for (id in len)
-          if (cov[id]/len[id] >= 0.5)
-              print id
-  }' \
-  Ksch_genome.fasta.fai \
-  Ksch.${TYPE}.merged.bed \
-  > Ksch.${TYPE}.candidate.ids
-done
-
-# Remove candidate organelle-derived scaffolds
-cat Ksch.cp.candidate.ids Ksch.mt.candidate.ids | \
-sort -u > Ksch.organelle_candidate.ids
+python3 calculate_organelle_coverage.py
 
 seqkit grep -v \
-  -f Ksch.organelle_candidate.ids \
-  Ksch_genome.fasta \
-  > Ksch.no_organelle.fa
+  -f remove_scaffolds.ids \
+  ksch_genome.fasta \
+  > Ksch.final.clean.fa
+
+seqkit seq -n Ksch.final.clean.fa > Ksch.final.clean.ids
+
+python3 fasta_stats.py Ksch.final.clean.fa \
+  > assembly.after_removal.tsv
+
+python3 compare_before_after.py
 
 ### Software
 
 - HiMT v1.1.4
-- minimap2 v2.30-r1287
-- BEDTools v2.26.0
+- minimap2 v2.30-r128
 - SAMtools v1.6
+- BEDTools v2.26.0
 - SeqKit v2.12.0
+- Python 3
 
 ### Input
 
-- `Ksch.hifi.bam`
-- `Ksch_genome.fasta`
-- HiMT-generated chloroplast assembly
-- HiMT-generated mitochondrial assembly
+- `Ksch.hifi.bam` — PacBio HiFi reads
+- `ksch_genome.fasta` — Assembly before filtering
+- `Ksch.chloroplast.fa` — Chloroplast reference
+- `Ksch.mitochondrial.fa` — Mitochondrial reference
 
 ### Output
 
-- `Ksch.cp.paf`
-- `Ksch.mt.paf`
-- `Ksch.cp.merged.bed`
-- `Ksch.mt.merged.bed`
-- `Ksch.cp.candidate.ids`
-- `Ksch.mt.candidate.ids`
-- `Ksch.organelle_candidate.ids`
-- `Ksch.no_organelle.fa`
+- `chloroplast_vs_nuclear.paf`
+- `mitochondrial_vs_nuclear.paf`
+- `chloroplast.merged.bed`
+- `mitochondrial.merged.bed`
+- `all_organelle.merged.bed`
+- `all_scaffold_organelle_coverage.tsv`
+- `candidate_organelle_scaffolds.tsv`
+- `remove_scaffolds.ids`
+- `Ksch.final.clean.fa`
+- `assembly_before_after.tsv`
 
 ### Input–output relationship
 
-HiFi reads
-→ HiMT organelle assembly
-→ chloroplast and mitochondrial reference sequences
+HiFi reads → HiMT organelle assembly → minimap2 alignment → merged nuclear alignment intervals → non-redundant organellar coverage (CP + MT) → removal of scaffolds with ≥50% coverage → final cleaned assembly.
 
-Nuclear genome assembly
-+ organelle references
-→ minimap2 alignment
-→ merged organelle-covered regions
-→ scaffolds with ≥50% organelle coverage
-→ removal of candidate organelle-derived scaffolds
-→ `Ksch.no_organelle.fa`
+### Summary
 
-Scaffolds with at least 50% of their length covered by non-redundant chloroplast or mitochondrial alignments were classified as candidate organelle-derived sequences and removed from the nuclear assembly.
+A total of 60 candidate organelle-derived scaffolds (3,312,179 bp) were removed, reducing the assembly from 521 scaffolds (988,689,271 bp) to 461 scaffolds (985,377,092 bp). Scaffold N50 remained unchanged at 104,900,589 bp.
