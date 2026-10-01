@@ -45,11 +45,9 @@ HapHiC/utils/juicer post \
   out_JBAT.review.new.clean.assembly \
   out_JBAT.liftover.agp \
   Ksch.asm.bp.p_ctg.fa
-  
-mv out_JBAT.FINAL.agp Ksch_new_clean.FINAL.agp
 
 HapHiC/haphic plot \
-  Ksch_new_clean.FINAL.agp \
+  out_JBAT.FINAL.agp \
   Ksch_HiC.filtered.bam
 
 ### Software
@@ -76,9 +74,9 @@ HapHiC/haphic plot \
 - `scaffolds.raw.agp`
 - `out_JBAT.assembly`
 - `out_JBAT.hic`
-- `out_JBAT.review.new.clean.assembly`
-- `out_JBAT.FINAL.clean.agp`
-- `out_JBAT.FINAL.clean.fa`
+- `out_JBAT.review.new.assembly`
+- `out_JBAT.FINAL.agp`
+- `out_JBAT.FINAL.fa`
 
 ### Input–output relationship
 
