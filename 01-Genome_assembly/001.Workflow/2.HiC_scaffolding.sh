@@ -38,11 +38,9 @@ java -Djava.awt.headless=true -Xmx32G \
   out_JBAT.hic.part \
   <(grep PRE_C_SIZE out_JBAT.log | awk '{print $2" "$3}')
 
-mv out_JBAT.hic.part out_JBAT.hic
-
 HapHiC/utils/juicer post \
   -o out_JBAT \
-  out_JBAT.review.new.clean.assembly \
+  out_JBAT.review.new.assembly \
   out_JBAT.liftover.agp \
   Ksch.asm.bp.p_ctg.fa
 
@@ -70,6 +68,7 @@ HapHiC/haphic plot \
 
 - `Ksch_HiC_R1.fq.gz`
 - `Ksch_HiC_R2.fq.gz`
+- `Ksch_HiC.bam`
 - `Ksch_HiC.filtered.bam`
 - `scaffolds.raw.agp`
 - `out_JBAT.assembly`
@@ -80,7 +79,7 @@ HapHiC/haphic plot \
 
 ### Input–output relationship
 
-The chromosome-scale assembly workflow consisted of four sequential steps:
+The chromosome-scale assembly workflow consisted of three sequential steps:
 
 1. **Hi-C read alignment and filtering**  
    Input: `Ksch.asm.bp.p_ctg.fa` and Hi-C paired-end reads  
@@ -90,10 +89,7 @@ The chromosome-scale assembly workflow consisted of four sequential steps:
    Input: `Ksch.asm.bp.p_ctg.fa` and `Ksch_HiC.filtered.bam`  
    Output: `scaffolds.raw.agp` and intermediate HapHiC scaffolding files
 
-3. **Juicebox manual curation**  
-   The HapHiC scaffolding result was converted into Juicebox files (`out_JBAT.assembly` and `out_JBAT.hic`) for visual inspection and manual correction.  
-   Output: `out_JBAT.review.new.assembly`
-
-4. **Contamination removal and final assembly generation**  
-   After manual curation, 73 contaminant scaffolds were removed from the reviewed assembly to generate `out_JBAT.review.new.clean.assembly`.  
-   This clean reviewed assembly was then processed using the HapHiC `juicer post` utility to generate the final chromosome-scale AGP and FASTA files, including `Ksch_new_clean.FINAL.agp` and `Ksch_new_clean.FINAL.fa`.
+3. **Juicebox manual curation and assembly reconstruction**  
+   The HapHiC scaffolding result was converted into Juicebox files (`out_JBAT.assembly` and `out_JBAT.hic`) for visual inspection and manual correction. 
+   The manually reviewed assembly (`out_JBAT.review.new.assembly`) was subsequently processed using the HapHiC `juicer post` utility to reconstruct the Hi-C-curated chromosome-scale assembly (`out_JBAT.FINAL.agp` and `out_JBAT.FINAL.fa`). 
+   Contamination removal was performed subsequently and is documented separately in `06-Contamination_assessment`.
