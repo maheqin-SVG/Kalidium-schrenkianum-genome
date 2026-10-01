@@ -1,4 +1,4 @@
-# 06. Contamination Assessment
+# Contamination Assessment
 
 This directory contains the scripts and supporting results for organellar contamination filtering, GC–depth assessment, and Kraken2 screening of the *Kalidium schrenkianum* genome assembly.
 
