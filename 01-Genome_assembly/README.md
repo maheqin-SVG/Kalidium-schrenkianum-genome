@@ -1,6 +1,6 @@
 # Genome assembly
 
-This directory contains the scripts and supporting files used for the chromosome-scale genome assembly of *Kalidium schrenkianum*, including HiFi assembly, Hi-C scaffolding, and Juicebox manual curation.
+This directory contains the scripts and supporting files used for the chromosome-scale genome assembly of *Kalidium schrenkianum*, including HiFi assembly, Hi-C scaffolding, genome size estimation, and Juicebox manual curation.
 
 ### `001.Workflow`
 
@@ -8,7 +8,7 @@ Scripts for genome assembly and Hi-C scaffolding:
 
 - `1.HiFi_assembly.sh` — HiFi-based primary genome assembly
 - `2.HiC_scaffolding.sh` — Hi-C read mapping, HapHiC scaffolding, Juicebox file preparation, and reconstruction of the manually curated assembly
-
+- `3.Genome_size_estimation.sh` — 27-mer counting and histogram generation using Jellyfish v2.2.10 for genome size estimation with GenomeScope v2.0
 ### `002.Juicerbox`
 
 Records of manual Hi-C curation:
