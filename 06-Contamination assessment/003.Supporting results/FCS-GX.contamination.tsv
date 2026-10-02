@@ -1,0 +1,15 @@
+Seq_id	Start_pos	End_pos	Contaminant_organism_name	Suggestion	Excluded_length_bp
+scaffold_90	1	31691	Contarinia nasturtii	EXCLUDE	31691
+scaffold_102	1	61092	Contarinia nasturtii	EXCLUDE	61092
+scaffold_104	1	24055	Contarinia nasturtii	EXCLUDE	24055
+scaffold_105	1	32220	Contarinia nasturtii	EXCLUDE	32220
+scaffold_107	1	43677	Contarinia nasturtii	EXCLUDE	43677
+scaffold_113	1	66113	Contarinia nasturtii	EXCLUDE	66113
+scaffold_118	1	27836	Contarinia nasturtii	EXCLUDE	27836
+scaffold_138	1	28853	Contarinia nasturtii	EXCLUDE	28853
+scaffold_141	1	36745	Contarinia nasturtii	EXCLUDE	36745
+scaffold_425	1	39050	Contarinia nasturtii	EXCLUDE	39050
+scaffold_463	1	47795	Contarinia nasturtii	EXCLUDE	47795
+scaffold_464	1	37175	Contarinia nasturtii	EXCLUDE	37175
+scaffold_480	1	34604	Contarinia nasturtii	EXCLUDE	34604
+Total			13 scaffolds	EXCLUDE	510906
