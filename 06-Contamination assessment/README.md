@@ -23,6 +23,7 @@ Supporting scripts for contamination assessment:
 
 Key supporting results:
 
+- `FCS-GX.contamination.tsv` — FCS-GX contamination screening results
 - `candidate_organelle_scaffolds.tsv` — candidate organelle-derived scaffolds and coverage statistics
 - `Ksch.final.clean.10kb.GC_depth.q20.tsv` — GC content and mean HiFi sequencing depth for 10-kb genomic windows
 - `Ksch.final.clean.kraken2.report` — Kraken2 taxonomic classification results
